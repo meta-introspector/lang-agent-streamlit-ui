@@ -1,11 +1,11 @@
 ---
 title: Streamlit Docker Template
-emoji: 🧠🔎
+emoji: 📉
 colorFrom: blue
 colorTo: green
 sdk: docker
 app_port: 8501
-pinned: true
+pinned: false
 ---
 
 ## 🧠 Streamlit Docker Template 🔎
