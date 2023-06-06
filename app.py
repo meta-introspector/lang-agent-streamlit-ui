@@ -34,3 +34,9 @@ filtered_data = data[data[DATE_COLUMN].dt.hour == hour_to_filter]
 
 st.subheader('Map of all pickups at %s:00' % hour_to_filter)
 st.map(filtered_data)
+
+uploaded_file = st.file_uploader("Choose a file")
+if uploaded_file is not None:
+    st.write(uploaded_file.name)
+    bytes_data = uploaded_file.getvalue()
+    st.write(len(bytes_data), "bytes")

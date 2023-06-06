@@ -20,4 +20,8 @@ WORKDIR $HOME/app
 COPY . $HOME/app
 
 EXPOSE 8501
-CMD streamlit run app.py
+CMD streamlit run app.py \
+    --server.headless true \
+    --server.enableCORS false \
+    --server.enableXsrfProtection false \
+    --server.fileWatcherType none
