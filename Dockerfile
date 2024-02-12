@@ -1,4 +1,9 @@
+FROM h4ckermike/lang_agent:dev
+
 FROM python:3.8.9
+
+COPY --from=0 /home/opam/ /home/opam/
+COPY --from=0 /lang_agent/ /lang_agent/
 
 WORKDIR /app
 
