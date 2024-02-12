@@ -1,9 +1,15 @@
+
 FROM h4ckermike/lang_agent:dev
+FROM h4ckermike/unimath-coq-trace-batch2:test1
 
 FROM python:3.8.9
 
+# lang agent
 COPY --from=0 /home/opam/ /home/opam/
 COPY --from=0 /lang_agent/ /lang_agent/
+
+
+COPY --from=1 /data /data #from unimath
 
 WORKDIR /app
 
