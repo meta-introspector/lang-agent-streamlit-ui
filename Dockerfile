@@ -9,7 +9,7 @@ COPY --from=0 /home/opam/ /home/opam/
 COPY --from=0 /lang_agent/ /lang_agent/
 
 
-COPY --from=1 /data /data #from unimath
+COPY --from=1 /data /data 
 
 WORKDIR /app
 
