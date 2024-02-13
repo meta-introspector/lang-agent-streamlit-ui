@@ -14,8 +14,10 @@ prompt  = st.text_input("prompt",value="Consider this text as a creative writing
 
 source_data = st.selectbox(
     'What data source should we read',
-    ( '/mnt/data1/2024/02/12/meta-coq-common/',
-      '/data'))
+    ( 
+        '/data',
+        '/mnt/data1/2024/02/12/meta-coq-common/',
+    ))
 
 st.write('You selected:', source_data)
 
