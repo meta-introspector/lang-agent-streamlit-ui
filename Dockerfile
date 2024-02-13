@@ -1,6 +1,7 @@
 
 FROM h4ckermike/lang_agent:dev
-FROM h4ckermike/unimath-coq-trace-batch2:test1
+#FROM h4ckermike/unimath-coq-trace-batch2:test1
+FROM h4ckermike/meta-coq-utils-data-1:2024-02-12
 
 FROM python:3.8.9
 

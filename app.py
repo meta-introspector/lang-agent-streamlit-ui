@@ -1,42 +1,63 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import os
+from glob import glob
+import subprocess
 
-st.title('Uber pickups in NYC')
+st.title('Welcome to introspector lang_agent!!')
 
-DATE_COLUMN = 'date/time'
-DATA_URL = ('https://s3-us-west-2.amazonaws.com/'
-            'streamlit-demo-data/uber-raw-data-sep14.csv.gz')
 
-@st.cache_data
-def load_data(nrows):
-    data = pd.read_csv(DATA_URL, nrows=nrows)
-    lowercase = lambda x: str(x).lower()
-    data.rename(lowercase, axis='columns', inplace=True)
-    data[DATE_COLUMN] = pd.to_datetime(data[DATE_COLUMN])
-    return data
+limit  = st.number_input("limit",value=40)
+url  = st.text_input("url",value="http://localhost:11434")
+prompt  = st.text_input("prompt",value="Consider this text as a creative writing prompt: ")
 
-data_load_state = st.text('Loading data...')
-data = load_data(10000)
-data_load_state.text("Done! (using st.cache)")
+source_data = st.selectbox(
+    'What data source should we read',
+    ( '/mnt/data1/2024/02/12/meta-coq-common/',
+      '/data'))
 
-if st.checkbox('Show raw data'):
-    st.subheader('Raw data')
-    st.write(data)
+st.write('You selected:', source_data)
 
-st.subheader('Number of pickups by hour')
-hist_values = np.histogram(data[DATE_COLUMN].dt.hour, bins=24, range=(0,24))[0]
-st.bar_chart(hist_values)
+#in python read directory source_data recursivly and print it in select box in streamlit
 
-# Some number in the range 0-23
-hour_to_filter = st.slider('hour', 0, 23, 17)
-filtered_data = data[data[DATE_COLUMN].dt.hour == hour_to_filter]
 
-st.subheader('Map of all pickups at %s:00' % hour_to_filter)
-st.map(filtered_data)
 
-uploaded_file = st.file_uploader("Choose a file")
-if uploaded_file is not None:
-    st.write(uploaded_file.name)
-    bytes_data = uploaded_file.getvalue()
-    st.write(len(bytes_data), "bytes")
+def get_files(path='.'):
+    """Recursive function to find all files in given directory path."""
+    files = []
+    for item in os.listdir(path):
+        fp = os.path.join(path, item)
+        if os.path.isdir(fp):
+            files.append(fp)
+            files += get_files(fp)
+    return files
+
+files = get_files(source_data)
+if len(files) > limit:
+    files = files[0:limit]
+#st.write(files)
+
+mode = st.selectbox("mode", [
+    "--ollama",
+    "--openai",
+    
+])
+model = st.selectbox("model", ["mistral","mixtral"])
+
+input_dir = st.selectbox("Select a file", files)
+st.write(f"You selected file: {input_dir}")
+
+if st.button("Process data"):
+    prompt = prompt.replace("\"","\'")
+    cmd = ["bash",
+           "./run_agent.sh",
+           input_dir,
+           url,
+           mode,
+           model,
+           "\"{prompt}\""]        
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    
+    for line in proc.stdout:
+        st.write(line)
