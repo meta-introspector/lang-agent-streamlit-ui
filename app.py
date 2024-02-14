@@ -58,13 +58,67 @@ if st.button("Process data"):
            url,
            mode,
            model,
-           "\"{prompt}\""]
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+           "\"{prompt}\""]        
+    p = subprocess.Popen(cmd,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE,
+                         )
+    readable = {
+        p.stdout.fileno(): sys.stdout.buffer, # log separately
+        p.stderr.fileno(): sys.stderr.buffer,
+    }
+    while readable:
+        for fd in select(readable, [], [])[0]:
+            data = os.read(fd, 1024) # read available
+            if not data: # EOF
+                del readable[fd]
+            else:
+                st.write(data.decode("utf-8"))
+                readable[fd].write(data)
+                readable[fd].flush()                   
 
-    for line in proc.stdout:
-        st.write(line)
-
+## 
 def get_out_files(path='.'):
+    """Recursive function to find all files in given directory path."""
+    files = []
+    for item in os.listdir(path):
+        fp = os.path.join(path, item)
+        if os.path.isdir(fp):
+            files.append(fp)
+            files += get_out_files(fp)
+        else:
+            if fp.endswith(".test"):
+                files.append(fp)
+                #st.write(fp)
+            else:
+                #st.write("skip"+fp)
+                pass
+    return files
+
+
+if st.button(f"Scan output {input_dir}"):
+    st.write('Going to scan')
+    outfiles = get_out_files(input_dir)
+    if len(outfiles) > limit:
+        outfiles = outfiles[0:limit]
+        #st.write(outfiles)
+
+        for x in outfiles:
+            if os.path.isdir(x):
+                pass
+            else:
+                (p,f) =os.path.split(x)
+                with open(x, "r") as fp:
+                    btn = st.download_button(
+                        label="Download text" + f,
+                        data=fp,
+                        file_name=f,
+                        mime="application/text"
+                    )
+
+                    ###
+
+                    def get_out_files(path='.'):
     """Recursive function to find all files in given directory path."""
     files = []
     for item in os.listdir(path):
