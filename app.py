@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import os
+import sys
 from glob import glob
 import subprocess
 
@@ -50,7 +51,7 @@ model = st.selectbox("model", ["mistral","mixtral"])
 input_dir = st.selectbox("Select a file", files)
 st.write(f"You selected file: {input_dir}")
 
-if st.button("Process data"):
+if st.button("Process data",key="process"):
     prompt = prompt.replace("\"","\'")
     cmd = ["bash",
            "./run_agent.sh",
@@ -96,29 +97,10 @@ def get_out_files(path='.'):
     return files
 
 
-if st.button(f"Scan output {input_dir}"):
-    st.write('Going to scan')
-    outfiles = get_out_files(input_dir)
-    if len(outfiles) > limit:
-        outfiles = outfiles[0:limit]
-        #st.write(outfiles)
 
-        for x in outfiles:
-            if os.path.isdir(x):
-                pass
-            else:
-                (p,f) =os.path.split(x)
-                with open(x, "r") as fp:
-                    btn = st.download_button(
-                        label="Download text" + f,
-                        data=fp,
-                        file_name=f,
-                        mime="application/text"
-                    )
-
-                    ###
-
-                    def get_out_files(path='.'):
+### output
+                    
+def get_out_files(path='.'):
     """Recursive function to find all files in given directory path."""
     files = []
     for item in os.listdir(path):
@@ -135,8 +117,8 @@ if st.button(f"Scan output {input_dir}"):
                 pass
     return files
 
-
-if st.button(f"Scan output {input_dir}"):
+# scan1
+if st.button(f"Scan output {input_dir}", key=input_dir):
     st.write('Going to scan')
     outfiles = get_out_files(input_dir)
     if len(outfiles) > limit:
@@ -150,7 +132,8 @@ if st.button(f"Scan output {input_dir}"):
                 (p,f) =os.path.split(x)
                 with open(x, "r") as fp:
                     btn = st.download_button(
-                        label="Download text" + f,
+                        key=x,
+                        label="Download text" + x,
                         data=fp,
                         file_name=f,
                         mime="application/text"
