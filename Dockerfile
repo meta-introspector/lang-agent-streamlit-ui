@@ -22,7 +22,7 @@ RUN pip3 install --no-cache-dir -r /app/requirements.txt
 
 # User
 RUN useradd -m -u 1000 user
-RUN chmod 777 /data
+RUN chmod -R 777 /data
 USER user
 ENV HOME /home/user
 ENV PATH $HOME/.local/bin:$PATH
