@@ -31,6 +31,9 @@ RUN mkdir app
 WORKDIR $HOME/app
 COPY . $HOME/app
 
+# make writable
+RUN chmod 777 /data
+
 EXPOSE 8501
 CMD streamlit run app.py \
     --server.headless true \
