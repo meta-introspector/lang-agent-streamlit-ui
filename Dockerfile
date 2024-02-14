@@ -22,6 +22,7 @@ RUN pip3 install --no-cache-dir -r /app/requirements.txt
 
 # User
 RUN useradd -m -u 1000 user
+RUN chmod 777 /data
 USER user
 ENV HOME /home/user
 ENV PATH $HOME/.local/bin:$PATH
@@ -32,7 +33,7 @@ WORKDIR $HOME/app
 COPY . $HOME/app
 
 # make writable
-RUN chmod 777 /data
+
 
 EXPOSE 8501
 CMD streamlit run app.py \
